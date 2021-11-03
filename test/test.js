@@ -1,100 +1,87 @@
-const Decentragram = artifacts.require('./Decentragram.sol')
+const { assert } = require("chai");
 
-require('chai')
-  .use(require('chai-as-promised'))
-  .should()
+const Medium = artifacts.require("./Medium.sol");
 
-contract('Decentragram', ([deployer, author, tipper]) => {
-  let decentragram
+require("chai").use(require("chai-as-promised")).should();
+
+contract("Medium", ([deployer, author, tipper]) => {
+  let medium;
+  let accounts;
 
   before(async () => {
-    decentragram = await Decentragram.deployed()
-  })
+    medium = await Medium.deployed();
+  });
 
-  describe('deployment', async () => {
-    it('deploys successfully', async () => {
-      const address = await decentragram.address
-      assert.notEqual(address, 0x0)
-      assert.notEqual(address, '')
-      assert.notEqual(address, null)
-      assert.notEqual(address, undefined)
-    })
+  describe("deployment", async () => {
+    it("deploys successfully", async () => {
+      const address = await medium.address;
+      assert.notEqual(address, 0x0);
+      assert.notEqual(address, "");
+      assert.notEqual(address, null);
+      assert.notEqual(address, undefined);
+    });
 
-    it('has a name', async () => {
-      const name = await decentragram.name()
-      assert.equal(name, 'Decentragram')
-    })
-  })
+    // it('has a name', async () => {
+    //   const name = await medium.name()
+    //   assert.equal(name, 'Medium')
+    // })
+  });
 
-  describe('images', async () => {
-    let result, imageCount
-    const hash = 'QmV8cfu6n4NT5xRr2AHdKxFMTZEJrA44qgrBCr739BN9Wb'
+  beforeEach(async () => {
+    accounts = await web3.eth.getAccounts();
+    console.log(" these are accounts  ");
+    console.log(accounts);
+  });
 
-    before(async () => {
-      result = await decentragram.uploadImage(hash, 'Image description', { from: author })
-      imageCount = await decentragram.imageCount()
-    })
+  describe("blogs", async () => {
+    let result;
+    it("creates blogs", async () => {
+      const name = "Ravindra";
+      const email = "Ravindtrababu@gmail.com";
+      const title = "how to write smart contract";
+      const content = "you will know the things";
+      result = await medium.createBlog(name, email, title, content);
+      assert.equal(result.logs[0].args["name"], name);
+      assert.equal(result.logs[0].args["email"], email);
+      assert.equal(result.logs[1].args["thisBlog"]["title"], title);
+      assert.equal(result.logs[1].args["thisBlog"]["content"], content);
+      console.log(result.logs[0].args, result.logs[1].args);
+    });
 
-    //check event
-    it('creates images', async () => {
-      // SUCESS
-      assert.equal(imageCount, 1)
-      const event = result.logs[0].args
-      assert.equal(event.id.toNumber(), imageCount.toNumber(), 'id is correct')
-      assert.equal(event.hash, hash, 'Hash is correct')
-      assert.equal(event.description, 'Image description', 'description is correct')
-      assert.equal(event.tipAmount, '0', 'tip amount is correct')
-      assert.equal(event.author, author, 'author is correct')
+    it("update blogs", (done) => {
+      const title = "to update";
+      const content = "updated content";
+      setTimeout(async () => {
+        result = await medium.updateBlog(
+          result.logs[1].args["thisBlog"].id,
+          title,
+          content
+        );
+        console.log(result.logs[0]);
+        done();
+      }, 5000);
+    });
 
+    // it("creates blogs", async () => {
+    //   let address = accounts[0];
+    //   result = await medium.createBlog(
+    //     "",
+    //     "",
+    //     "testing 2",
+    //     "test 2 description"
+    //   );
+    //   console.log(result);
+    // });
 
-      // FAILURE: Image must have hash
-      await decentragram.uploadImage('', 'Image description', { from: author }).should.be.rejected;
+    // it("get a blogs", async () => {
+    //   result = await medium.getBlogs();
+    //   console.log(result);
+    // });
 
-      // FAILURE: Image must have description
-      await decentragram.uploadImage('Image hash', '', { from: author }).should.be.rejected;
-    })
-
-    //check from Struct
-    it('lists images', async () => {
-      const image = await decentragram.images(imageCount)
-      assert.equal(image.id.toNumber(), imageCount.toNumber(), 'id is correct')
-      assert.equal(image.hash, hash, 'Hash is correct')
-      assert.equal(image.description, 'Image description', 'description is correct')
-      assert.equal(image.tipAmount, '0', 'tip amount is correct')
-      assert.equal(image.author, author, 'author is correct')
-    })
-
-    it('allows users to tip images', async () => {
-      // Track the author balance before purchase
-      let oldAuthorBalance
-      oldAuthorBalance = await web3.eth.getBalance(author)
-      oldAuthorBalance = new web3.utils.BN(oldAuthorBalance)
-
-      result = await decentragram.tipImageOwner(imageCount, { from: tipper, value: web3.utils.toWei('1', 'Ether') })
-
-      // SUCCESS
-      const event = result.logs[0].args
-      assert.equal(event.id.toNumber(), imageCount.toNumber(), 'id is correct')
-      assert.equal(event.hash, hash, 'Hash is correct')
-      assert.equal(event.description, 'Image description', 'description is correct')
-      assert.equal(event.tipAmount, '1000000000000000000', 'tip amount is correct')
-      assert.equal(event.author, author, 'author is correct')
-
-      // Check that author received funds
-      let newAuthorBalance
-      newAuthorBalance = await web3.eth.getBalance(author)
-      newAuthorBalance = new web3.utils.BN(newAuthorBalance)
-
-      let tipImageOwner
-      tipImageOwner = web3.utils.toWei('1', 'Ether')
-      tipImageOwner = new web3.utils.BN(tipImageOwner)
-
-      const expectedBalance = oldAuthorBalance.add(tipImageOwner)
-
-      assert.equal(newAuthorBalance.toString(), expectedBalance.toString())
-
-      // FAILURE: Tries to tip a image that does not exist
-      await decentragram.tipImageOwner(99, { from: tipper, value: web3.utils.toWei('1', 'Ether')}).should.be.rejected;
-    })
-  })
-})
+    it("get All blogs", async () => {
+      let idList = await medium.getAllBlogIds();
+      let blogList = await medium.getBlogsByIds(idList);
+      console.log(blogList);
+    });
+  });
+});
