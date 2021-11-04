@@ -44,32 +44,33 @@ class App extends Component {
     await this.getUserDetail();
     await this.getBlogIds();
     this.getBlogsFromBlogIdList(this.state.blogIdList).then((result) => {
-      console.log(result);
-      for (let i = 0; i < result.length; i++) {
-        let blog = result[i];
-        let {
-          blockNumber,
-          createdBy,
-          id,
-          title,
-          publishedAt,
-          lastUpdatedAt,
-          content,
-        } = blog;
-        this.setState({
-          blogs: {
-            ...this.state.blogs,
-            [blog.id]: {
-              blockNumber,
-              createdBy,
-              id,
-              title,
-              publishedAt,
-              lastUpdatedAt,
-              content,
+      if (result && result.length) {
+        for (let i = 0; i < result.length; i++) {
+          let blog = result[i];
+          let {
+            blockNumber,
+            createdBy,
+            id,
+            title,
+            publishedAt,
+            lastUpdatedAt,
+            content,
+          } = blog;
+          this.setState({
+            blogs: {
+              ...this.state.blogs,
+              [blog.id]: {
+                blockNumber,
+                createdBy,
+                id,
+                title,
+                publishedAt,
+                lastUpdatedAt,
+                content,
+              },
             },
-          },
-        });
+          });
+        }
       }
       this.state.medium.events.blogPublished((err, data) =>
         this.addNewBlog(data)
@@ -178,16 +179,17 @@ class App extends Component {
     let result = await this.state.medium.methods
       .getUser(this.state.account)
       .call();
-    let { name, email, id } = result;
-    if (email !== "")
+    console.log("result", result);
+    if (result && result.email != "") {
+      let { name, email, id } = result;
       this.setState({
         user: {
           name,
           email,
           id,
         },
-        account: id,
       });
+    }
   }
 
   async getBlogsFromBlogIdList(idList) {
@@ -241,7 +243,8 @@ class App extends Component {
     const blogIds = await this.state.medium.methods
       .getAllBlogIds()
       .call({ from: this.state.account });
-    this.setState({ blogIdList: [...this.state.blogIdList, ...blogIds] });
+    if (blogIds)
+      this.setState({ blogIdList: [...this.state.blogIdList, ...blogIds] });
   }
 
   addNewBlog(blog) {
@@ -275,7 +278,7 @@ class App extends Component {
   async newBlogSubmitClicked(blog) {
     this.state.medium.methods
       .createBlog(blog.name, blog.email, blog.title, blog.content)
-      .send({ from: this.state.user.id, handleRevert: true })
+      .send({ from: this.state.account })
       .then((result) => {
         this.setState({
           showNewBlogModal: false,
