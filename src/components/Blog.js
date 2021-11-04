@@ -1,9 +1,8 @@
 import React, { Component } from "react";
-import { Card, CardContent, Button, Typography } from "@mui/material";
+import { Card, CardContent, Button, Typography, Link } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { getDateMonth } from "./common";
 import UpdateBlogModal from "./UpdateBlogModal";
-import { useParams } from "react-router";
 
 export default class Blog extends Component {
   constructor(props) {
@@ -16,15 +15,7 @@ export default class Blog extends Component {
   render() {
     return (
       <div>
-        <UpdateBlogModal
-          showModal={this.state.showUpdateModal}
-          {...this.props}
-          cancelClicked={() => {
-            this.setState({
-              showUpdateModal: false,
-            });
-          }}
-        ></UpdateBlogModal>
+        <UpdateBlogModal {...this.props}></UpdateBlogModal>
         <Card
           style={{
             backgroundColor: "#F2E1F9",
@@ -43,9 +34,23 @@ export default class Blog extends Component {
             <Typography variant="h1" style={{ textAlign: "center" }}>
               {this.props.title}
             </Typography>
-            <Typography variant="h4" style={{ textAlign: "center" }}>
-              <span style={{ textAlign: "center" }}>
-                By :- {this.props.createdBy.name}
+            <Typography
+              variant="h4"
+              style={{
+                textAlign: "center",
+              }}
+            >
+              <span
+                style={{
+                  textAlign: "center",
+                }}
+              >
+                <Link
+                  href={"/user/" + this.props.createdBy.id}
+                  underline="hover"
+                >
+                  By :- {this.props.createdBy.name}
+                </Link>
               </span>
             </Typography>
             <Typography
@@ -57,10 +62,7 @@ export default class Blog extends Component {
                 color: "#726D6D",
               }}
             >
-              Published At :-{" "}
-              {getDateMonth(
-                new Date(parseInt(this.props.publishedAt._hex, 16))
-              )}
+              Published At :- {getDateMonth(this.props.publishedAt)}
             </Typography>
             <Typography
               variant="h5"
@@ -70,10 +72,7 @@ export default class Blog extends Component {
                 color: "#726D6D",
               }}
             >
-              Last Updated At :-{" "}
-              {getDateMonth(
-                new Date(parseInt(this.props.lastUpdatedAt._hex, 16))
-              )}
+              Last Updated At :- {getDateMonth(this.props.lastUpdatedAt)}
             </Typography>
             <br />
             <br />
@@ -91,11 +90,7 @@ export default class Blog extends Component {
             </h3>
 
             <Button
-              onClick={() =>
-                this.setState({
-                  showUpdateModal: true,
-                })
-              }
+              onClick={this.props.handleEditClicked}
               size="large"
               style={{
                 margin: "0 auto",
@@ -115,7 +110,7 @@ export default class Blog extends Component {
               }}
             >
               Latest updated data of this blog contain in block number{" "}
-              {parseInt(this.props.blockNumber._hex, 16)}
+              {this.props.blockNumber}
             </h5>
           </CardContent>
         </Card>

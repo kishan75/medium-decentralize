@@ -8,7 +8,6 @@ import {
   Button,
   DialogTitle,
   TextField,
-  Container,
 } from "@mui/material";
 
 export default class NewBlogModal extends Component {
@@ -49,7 +48,7 @@ export default class NewBlogModal extends Component {
           {!this.props.user && (
             <DialogActions>
               <TextField
-                error={this.state.name == "" && this.state.name != undefined}
+                error={this.state.name === "" && this.state.name !== undefined}
                 name="name"
                 label="Name"
                 onChange={this.handleChange}
@@ -62,7 +61,7 @@ export default class NewBlogModal extends Component {
                 }}
               />
               <TextField
-                error={this.state.email == ""}
+                error={this.state.email === ""}
                 name="email"
                 label="Email"
                 onChange={this.handleChange}
@@ -79,7 +78,7 @@ export default class NewBlogModal extends Component {
           <DialogTitle id="scroll-dialog-title">
             <TextField
               fullWidth={true}
-              error={this.state.title == "" && this.state.title != undefined}
+              error={this.state.title === "" && this.state.title !== undefined}
               name="title"
               required
               multiline
@@ -93,7 +92,7 @@ export default class NewBlogModal extends Component {
           <DialogContent id="scroll-dialog-description">
             <TextField
               error={
-                this.state.content == "" && this.state.content != undefined
+                this.state.content === "" && this.state.content !== undefined
               }
               fullWidth={true}
               name="content"

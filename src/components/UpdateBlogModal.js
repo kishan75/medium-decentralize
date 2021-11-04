@@ -28,14 +28,16 @@ export default class UpdateBlogModal extends Component {
     });
   }
 
-  handleSubmit(e) {
-    alert("submitted");
-    e.preventDefault();
+  handleSubmit() {
+    this.props.updateBlog({
+      blogId: this.props.id,
+      ...this.state,
+    });
   }
 
   render() {
     return (
-      <div>
+      <div key={JSON.stringify(this.props)}>
         <Dialog
           maxWidth="md"
           fullWidth={true}
@@ -79,14 +81,19 @@ export default class UpdateBlogModal extends Component {
                 margin: "10px",
                 color: "red",
               }}
-              onClick={this.props.cancelClicked}
+              onClick={() => {
+                this.setState({
+                  title: this.props.title,
+                  content: this.props.content,
+                });
+                this.props.handleCancel();
+              }}
             >
               <CancelIcon />
               Cancel
             </Button>
             <Button
               onClick={this.handleSubmit}
-              disabled={this.state.disableSubmitButton}
               fullWidth
               style={{
                 backgroundColor: "white",

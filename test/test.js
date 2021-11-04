@@ -36,7 +36,7 @@ contract("Medium", ([deployer, author, tipper]) => {
   describe("blogs", async () => {
     let result;
     it("creates blogs", async () => {
-      const name = "Ravindra";
+      const name = "";
       const email = "Ravindtrababu@gmail.com";
       const title = "how to write smart contract";
       const content = "you will know the things";

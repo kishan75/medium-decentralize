@@ -1,12 +1,8 @@
 import React, { Component } from "react";
-import { Container, Grid, Box } from "@mui/material";
+import { Grid, Box } from "@mui/material";
 import { BlogCard } from "./BlogCard";
 
 export default class HomePage extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
       <div>
@@ -16,12 +12,7 @@ export default class HomePage extends Component {
               {Object.values(this.props.blogs).map((blog) => {
                 return (
                   <Grid item xs={4} key={blog.id}>
-                    <BlogCard
-                      {...blog}
-                      cardClicked={(blog) => {
-                        window.location.href = "/blog/" + blog.id;
-                      }}
-                    ></BlogCard>
+                    <BlogCard {...blog}></BlogCard>
                   </Grid>
                 );
               })}

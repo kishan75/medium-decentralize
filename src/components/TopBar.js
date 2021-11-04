@@ -1,14 +1,11 @@
 import React, { Component } from "react";
-import { Container, Toolbar, Button, ButtonGroup, AppBar } from "@mui/material";
+import { Container, Toolbar, Button, AppBar } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { BootstrapTooltip } from "./common";
 
 export default class TopBar extends Component {
-  constructor(props) {
-    super(props);
-  }
   render() {
     return (
       <div>
@@ -60,7 +57,7 @@ export default class TopBar extends Component {
                   <Button
                     disabled={this.props.user == null}
                     onClick={() => {
-                      window.location.href = "user/" + this.props.user.id;
+                      window.location.href = "/user/" + this.props.user.id;
                     }}
                     style={{
                       minWidth: "400px",
@@ -76,7 +73,6 @@ export default class TopBar extends Component {
             </Container>
           </Toolbar>
         </AppBar>
-        <Toolbar />
         <Toolbar />
         <Toolbar />
       </div>
