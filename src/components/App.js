@@ -223,11 +223,11 @@ class App extends Component {
 
   async setNetworkData() {
     const networkId = await window.web3.eth.net.getId();
-    const networkData = Medium.networks[networkId];
+    const networkData = '0x3'
     if (networkData) {
       let medium = new window.web3.eth.Contract(
         Medium.abi,
-        networkData.address
+        "0x8a4300979d3f6460e4de39c67eeb90a8a0959e1b"
       );
       this.setState({
         medium: medium,
